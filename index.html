@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LandLens AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="toast"></div>
+
+<header class="topbar">
+  <div class="brand" onclick="showPage('home')">
+    <div class="logo">LL</div>
+    <div><b>LandLens</b><span>AI</span><small>Smart Land Planning</small></div>
+  </div>
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('projects')">My Projects</button>
+    <button onclick="showPage('dashboard')">Dashboard</button>
+  </nav>
+  <div class="top-actions">
+    <button class="icon-btn" onclick="toggleTheme()" title="Dark mode">◐</button>
+    <button class="primary small" onclick="showPage('upload')">New Analysis</button>
+  </div>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">AI-POWERED LAND PLANNING</div>
+      <h1>Turn land images into <em>smart conceptual plans.</em></h1>
+      <p>Upload an empty-land photo, analyze its approximate dimensions, generate plot layouts, plan roads, common parking, green space and conceptual buildings.</p>
+      <div class="hero-actions">
+        <button class="primary" onclick="showPage('upload')">Analyze My Land →</button>
+        <button class="secondary" onclick="showPage('dashboard')">Explore Dashboard</button>
+      </div>
+      <div class="trust-row"><span>✓ No API key required</span><span>✓ Local processing</span><span>✓ 2D + 3D-style view</span></div>
+    </div>
+    <div class="hero-visual">
+      <div class="site-card">
+        <div class="site-top"><span>CONCEPT SITE PLAN</span><span class="status">● AI READY</span></div>
+        <svg viewBox="0 0 500 330" class="hero-plan">
+          <rect x="20" y="20" width="460" height="290" rx="10" class="landfill"/>
+          <rect x="20" y="20" width="460" height="42" class="roadfill"/>
+          <text x="250" y="46" text-anchor="middle" class="svgtxt">MAIN ACCESS ROAD · 30 FT</text>
+          <rect x="40" y="80" width="190" height="85" class="plotfill"/><rect x="245" y="80" width="190" height="85" class="plotfill"/>
+          <rect x="40" y="175" width="190" height="85" class="plotfill"/><rect x="245" y="175" width="190" height="85" class="plotfill"/>
+          <rect x="40" y="268" width="130" height="30" class="parkingfill"/><rect x="180" y="268" width="130" height="30" class="parkfill"/>
+          <text x="135" y="125" text-anchor="middle" class="svgtxt">PLOT 01</text><text x="340" y="125" text-anchor="middle" class="svgtxt">PLOT 02</text>
+          <text x="135" y="220" text-anchor="middle" class="svgtxt">PLOT 03</text><text x="340" y="220" text-anchor="middle" class="svgtxt">PLOT 04</text>
+          <text x="105" y="288" text-anchor="middle" class="smalltxt">COMMON PARKING</text><text x="245" y="288" text-anchor="middle" class="smalltxt">COMMON PARK</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head"><div><div class="eyebrow">ONE WORKFLOW</div><h2>From photo to planning concept</h2></div></div>
+  <div class="feature-grid">
+    <div class="feature"><b>01</b><h3>Analyze</h3><p>Validate the image and estimate a conceptual land boundary, dimensions and area.</p></div>
+    <div class="feature"><b>02</b><h3>Generate</h3><p>Create multiple layouts with plots, roads, a common park and common parking.</p></div>
+    <div class="feature"><b>03</b><h3>Visualize</h3><p>Inspect the 2D plan, plot details, building floors and an isometric 3D-style view.</p></div>
+    <div class="feature"><b>04</b><h3>Report</h3><p>Save the project and download a professional conceptual PDF report.</p></div>
+  </div>
+</section>
+
+<section id="upload" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 01</div><h1>Upload land image</h1><p>Use a clear photo of the land. A visible known reference length improves scale estimation.</p></div></div>
+  <div class="upload-layout">
+    <div class="upload-card">
+      <div id="dropzone" class="dropzone">
+        <div class="upload-icon">↑</div>
+        <h2>Drop your land image here</h2>
+        <p>PNG, JPG, JPEG or WEBP · Max 15 MB</p>
+        <button class="secondary" onclick="document.getElementById('file').click()">Browse image</button>
+        <input id="file" type="file" accept="image/*" hidden onchange="handleFile(this.files[0])">
+      </div>
+      <div id="preview-wrap" class="preview-wrap hidden">
+        <img id="preview" alt="Land preview">
+        <div class="preview-meta"><span id="file-name"></span><button class="secondary small" onclick="resetUpload()">Change</button></div>
+      </div>
+    </div>
+    <aside class="info-card">
+      <h3>Reference measurement</h3>
+      <p>If you know a real length visible in the image (for example, a 20 ft boundary segment), enter it here.</p>
+      <label>Known reference length (ft)</label>
+      <input id="reference" type="number" min="0" placeholder="Optional, e.g. 20">
+      <div class="note">Without a reference, results are clearly marked as photo estimates.</div>
+      <button id="analyze-btn" class="primary full" disabled onclick="analyze()">Analyze Land →</button>
+    </aside>
+  </div>
+</section>
+
+<section id="analysis" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 02</div><h1>AI land analysis</h1><p>Review the conceptual measurement before generating layouts.</p></div><button class="secondary" onclick="showPage('upload')">← Change Image</button></div>
+  <div class="analysis-grid">
+    <div class="image-panel card"><img id="analysis-image" alt="Analyzed land"></div>
+    <div class="metrics">
+      <div class="metric"><span>Estimated area</span><strong id="m-area">—</strong><small>sq ft</small></div>
+      <div class="metric"><span>Length</span><strong id="m-length">—</strong><small>ft</small></div>
+      <div class="metric"><span>Width</span><strong id="m-width">—</strong><small>ft</small></div>
+      <div class="metric"><span>Confidence</span><strong id="m-confidence">—</strong><small id="m-type">—</small></div>
+    </div>
+  </div>
+  <div class="card boundary-card"><h3>Boundary & measurement notes</h3><div id="analysis-notes"></div></div>
+  <button class="primary next-btn" onclick="showPage('requirements')">Confirm & Continue →</button>
+</section>
+
+<section id="requirements" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 03</div><h1>Planning requirements</h1><p>Set your planning preferences. The layout engine uses these values deterministically.</p></div></div>
+  <div class="form-grid">
+    <div class="card form-card"><h3>Plots</h3><label>Number of plots</label><input id="plot-count" type="number" value="8" min="2" max="24"><label>Maximum floors</label><select id="max-floors"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+    <div class="card form-card"><h3>Roads</h3><label>Main road width (ft)</label><input id="main-road" type="number" value="30" min="20"><label>Internal road width (ft)</label><input id="internal-road" type="number" value="20" min="15"></div>
+    <div class="card form-card"><h3>Common amenities</h3><label>Park allocation (%)</label><input id="park-percent" type="number" value="8" min="4" max="18"><label>Parking allocation (%)</label><input id="parking-percent" type="number" value="10" min="6" max="20"></div>
+  </div>
+  <div class="callout"><b>Planning rule:</b> LandLens creates <strong>one common parking area near the entrance</strong> and <strong>one common park</strong>. Separate parking is not assigned to every plot.</div>
+  <button class="primary next-btn" onclick="generateLayouts()">Generate 3 Layout Options →</button>
+</section>
+
+<section id="layouts" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 04</div><h1>Generated layouts</h1><p>Compare factual layout attributes and open any option in the planner.</p></div></div>
+  <div id="layout-cards" class="layout-cards"></div>
+</section>
+
+<section id="planner" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 05</div><h1>Interactive 2D planner</h1><p>Select a plot to inspect dimensions, area and floors.</p></div><div class="page-actions"><button class="secondary" onclick="show3D()">3D View</button><button class="primary" onclick="saveCurrentProject()">Save Project</button></div></div>
+  <div class="planner">
+    <aside class="toolbox card">
+      <h3>Plan tools</h3>
+      <button class="tool active">⌖ Select</button><button class="tool">⌗ Measure</button><button class="tool">▧ Plot</button><button class="tool">━ Road</button><button class="tool">♧ Park</button><button class="tool">▦ Parking</button>
+      <hr><div class="legend"><span class="plot-dot"></span> Plot</div><div class="legend"><span class="road-dot"></span> Road</div><div class="legend"><span class="park-dot"></span> Park</div><div class="legend"><span class="parking-dot"></span> Parking</div>
+    </aside>
+    <div class="canvas-card card"><div id="svg-container"></div><div class="canvas-footer"><span id="scale-label">Conceptual site plan</span><div><button class="secondary small" onclick="zoom(-1)">−</button><button class="secondary small" onclick="zoom(1)">+</button><button class="secondary small" onclick="fitPlan()">Fit</button></div></div></div>
+    <aside class="details card"><h3>Selection</h3><div id="selection"><div class="empty">Click a plot in the plan.</div></div></aside>
+  </div>
+</section>
+
+<section id="building" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 06</div><h1>Building & floor planner</h1><p>Conceptual floor planning for the selected plot.</p></div><button class="secondary" onclick="showPage('planner')">← Back to Plan</button></div>
+  <div id="building-content"></div>
+</section>
+
+<section id="view3d" class="page">
+  <div class="page-title"><div><div class="eyebrow">STEP 07</div><h1>3D-style visualization</h1><p>Explore the conceptual massing and amenities.</p></div><button class="secondary" onclick="showPage('planner')">← 2D Plan</button></div>
+  <div class="three-card card"><div id="three-scene"></div></div>
+  <div class="note wide">This visualization is conceptual and intended for planning communication, not construction documentation.</div>
+</section>
+
+<section id="dashboard" class="page">
+  <div class="page-title"><div><div class="eyebrow">WORKSPACE</div><h1>Project dashboard</h1><p>Start a new analysis or continue a saved project.</p></div><button class="primary" onclick="showPage('upload')">+ New Analysis</button></div>
+  <div class="dashboard-grid">
+    <div class="dash-card"><span>Projects</span><strong id="dash-projects">0</strong><small>Saved locally</small></div>
+    <div class="dash-card"><span>Layouts</span><strong id="dash-layouts">0</strong><small>Generated options</small></div>
+    <div class="dash-card"><span>Planning mode</span><strong>AI</strong><small>Deterministic geometry</small></div>
+  </div>
+  <div class="card recent"><h3>Recent projects</h3><div id="recent-projects"></div></div>
+</section>
+
+<section id="projects" class="page">
+  <div class="page-title"><div><div class="eyebrow">PROJECT HISTORY</div><h1>My projects</h1><p>Projects are stored locally on this machine.</p></div><button class="primary" onclick="showPage('upload')">+ New Analysis</button></div>
+  <div id="projects-list" class="projects-list"></div>
+</section>
+</main>
+
+<footer><div><b>LandLens AI</b> · Conceptual land planning workspace</div><div>Measurements are approximate · Verify with qualified professionals</div></footer>
+<script src="/app.js"></script>
+</body>
+</html>
